@@ -1,0 +1,31 @@
+{% extends 'layout.html'%} 
+{% block blk_main %}
+<a href="{{url_for('item_create', category_id=category.id)}}" class="btn btn-sm btn-primary">Add new Item</a>
+<a href="{{url_for('category_list')}}" class="btn btn-sm btn-primary">Back</a>
+<hr/>
+<div>
+    <h2>{{category.title}} Item List</h2>
+</div>
+<table class="table table-striped table-hover">
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>
+                    <a href="{{url_for('item_view', item_id = item.id)}}">{{item.title}}</a>
+                </td>
+                {% if item.ctlg_user == user_id :%}
+                <td>
+                    <a href="{{url_for('item_edit', item_id = item.id)}}" 
+                    class="btn btn-sm btn-primary" role="button">Edit</a>
+                    <a href="{{url_for('item_delete_confirm', item_id = item.id)}}" 
+                    class="btn btn-sm btn-danger" role="button">Delete</a>
+                </td>
+                {% else %}
+                 <td></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+

@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block blk_main %}
+
+<div class="jumbotron">
+    <div>
+        <h1>Sports Catalog</h1>
+        <p>A project with Flask, SQLAlchemy, PostgreSQL, BootStrap</p>
+        <p>
+            <a class="btn btn-primary btn-lg">Continue</a>
+        </p>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block blk_side %}
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">ABOUT PROJECT</h3>
+    </div>
+    <div class="panel-body">
+       
+       <span><b>About SPORTS CATALOG</b></span>
+       
+        <p>
+            This is the third project in the series. For Full stack web development course. Project demonstrates use of the following
+            skills:
+            <br>
+            <ul>
+                <li>Flask - A Python Web Framework</li>
+                <li>Bootstrap - CSS framework for Front End</li>
+                <li>PostgreSQL - A Database for persistance</li>
+                <li>SQLAlchemy - An Object Relational Mapper</li>
+            </ul>
+        </p>
+        <hr/>
+        <p>
+            You can view or download the entire source code at GitHub.
+        </p>
+    </div>
+    <div class="panel-footer">
+        <a href="https://github.com/SophieReddimalla/fullstack-nanodegree-vm/tree/master/vagrant/catalog" 
+          class="btn btn-primary">Download</a>
+    </div>
+</div>
+      
+{% endblock %}

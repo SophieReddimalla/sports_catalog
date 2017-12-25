@@ -1,0 +1,21 @@
+{% extends 'layout.html'%} 
+{% from "form_macros.html" import render_field %} 
+{% block blk_main %}
+<header>
+    <h2>Edit Item</h2>
+</header>
+<section>
+    <form action="" method="post">
+        {{form.hidden_tag()}}
+        <table>
+            {{ render_field(form.title, size=50) }} {{ render_field(form.description, size=500) }}
+            <tr>
+                <td></td>
+                <td>
+                    <input type="submit" value="Update" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</section>
+{% endblock %}

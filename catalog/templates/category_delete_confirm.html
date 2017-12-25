@@ -1,0 +1,22 @@
+{% extends "layout.html" %} 
+{% block blk_main %}
+<h2>Category - {{ category.title }}</h2>
+<p>Are you sure. You want to delete this category and all its Items?</p> 
+<form action="">
+    <input type="button" id="sam" value = "Yes" />
+    <input type="button" value = "No" />
+
+</form>
+
+{% endblock %}
+
+{% block blk_scripts %}
+<script>
+    $("#sam").click(function () {
+        $.get("/category/delete/{{category.id}}",
+            function (data, status) {
+                alert("Data: " + data + "\nStatus: " + status);
+            });
+    });
+</script>
+{% endblock %}
