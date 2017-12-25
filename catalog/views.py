@@ -173,3 +173,27 @@ def item_edit(item_id):
         return render_template('item_edit.html', form=form)
     return render_template('error_not_authorized.html', message=item.title)
 
+# -------------------------------------------------------------------------------------------##
+# LOGIN LOGOUT ELEMENTS:
+# -------------------------------------------------------------------------------------------##
+
+@app.route('/logout')
+def logout():
+    return render_template('logout.html')
+
+
+@app.route('/user/create', methods=['GET', 'POST'])
+def user_create():
+    form = UserForm()
+    if form.validate_on_submit():
+        user = User()
+        user.firstname = form.firstname.data
+        user.lastname = form.lastname.data
+        user.username = form.username.data
+        user.password = form.password.data
+        user.email = form.email.data
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('home'))
+    return render_template('user_create.html', form=form)
+
