@@ -3,11 +3,11 @@
 
 
 {% block blk_main %}
-<button class="btn btn-success">Sign in With Google</button>
+
 <div id="signinButton">
   <span class="g-signin" 
   data-scope="openid email" 
-  data-clientid="1094322304882-3bpej6o2hh5glgg5o7etbjvg4bfsn9vj.apps.googleusercontent.com"
+  data-clientid={{CLIENT_ID}}
   data-redirecturi="postmessage"
   data-accesstype="offline"
   data-cookiepolicy="single_host_origin"

@@ -29,13 +29,11 @@ class Item(db.Model):
 class User(db.Model):
     __tablename__ = 'ctlg_user'
     id = db.Column(db.Integer, primary_key=True)
-    firstname = db.Column(db.String(100), nullable=False)
-    lastname = db.Column(db.String(100), nullable=False)
-    username = db.Column(db.String(100), nullable=False)
-    password = db.Column(db.String(100), nullable=False)
-    created = db.Column(db.DateTime, default=datetime.utcnow)
-    modified = db.Column(db.DateTime, default=datetime.utcnow)
+    username = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True)
+    gplus_id = db.Column(db.String(40), unique=True)
+    created = db.Column(db.DateTime, default=datetime.utcnow)
+    modified = db.Column(db.DateTime, default=datetime.utcnow)    
     categories = db.relationship('Category', backref='ctlg_user',
                                  lazy='dynamic')
     items = db.relationship('Item', backref='ctlg_user', lazy='dynamic')

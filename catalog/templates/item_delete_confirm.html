@@ -1,11 +1,16 @@
 {% extends "layout.html" %} 
 {% block blk_main %}
-<p>Are you sure. You want to delete this category and all its Items?</p> 
-<form action="">
-    <input type="button" id="sam" value = "Yes" />
-    <input type="button" value = "No" />
+<div class="panel panel-danger">
+      <div class="panel-heading">
+            <h3 class="panel-title">Do you want to delete {{item.title}}?</h3>
+      </div>
+      <div class="panel-body">
+            <a href="{{url_for('item_delete', item_id=item.id)}}">Yes</a>
+            <a href="{{url_for('category_view', category_id=item.category_id)}}">No</a>
+      </div>
+</div>
 
-</form>
+
 
 {% endblock %}
 

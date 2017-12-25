@@ -1,6 +1,7 @@
 from flask import Flask, render_template, flash, redirect, url_for, abort, jsonify, request, make_response
 from flask import session as login_session
 from sqlalchemy import desc
+from datetime import datetime
 
 import json
 import random
@@ -22,14 +23,14 @@ CLIENT_ID = json.loads(
 
 
 def get_current_user():
-    user = User.query.get(1)   # 1-Samson ; 3 - Sophie
+    user = User.query.filter_by(gplus_id=str(login_session['gplus_id'])).first()   # 1-Samson ; 3 - Sophie
     return user
 
 
 # WELCOME PAGE
 @app.route('/')
 def welcome():
-    flash("Hello and Welcome")
+    flash("Welcome to Sports Catalog " )
     return render_template('welcome.html')
 
 # HOME PAGE WITH CATEGORY LIST AND LATEST-ITEM LIST
@@ -88,18 +89,21 @@ def category_delete(category_id):
         delete_flag = False
 
     items = Item.query.filter_by(category_id=category_id).all()
-    for item in items:
-        if item.ctlg_user != get_current_user():
-            delete_flag = False
-            break
+    if items is not None:
+        for item in items:
+            if item.ctlg_user != get_current_user():
+                delete_flag = False
+                break
 
     if delete_flag == True:
-        for item in items:
-            db.session.delete(item)
+        if items is not None:
+            for item in items:
+                db.session.delete(item)
             db.session.commit()
-            db.session.delete(category)
-            db.session.commit()
-            flash("Category -" + category.title +
+        db.session.delete(category)
+        db.session.commit()
+
+        flash("Category -" + category.title +
                   " and all its items have been deleted successfully!!")
         return redirect(url_for('category_list'))
     else:
@@ -154,29 +158,35 @@ def item_delete_confirm(item_id):
 @app.route('/item/delete/<int:item_id>')
 def item_delete(item_id):
     item = Item.query.get(item_id)
-    if item.user_id == get_current_user():
-            db.session.delete(item)
-            db.session.commit()
-            return render_template('item_delete.html')
+    category_id = item.category_id;
+    user = get_current_user()
+    if item.user_id == user.id:
+        db.session.delete(item)
+        db.session.commit()
+        flash('Item deleted successfully')
+        return redirect(url_for('category_view', category_id = category_id))
+    else:
+        flash('Item cannot be deleted!!')
+        return redirect(url_for('category_view', category_id = category_id))        
 
-    flash("This item is not been created by you.." )
 
 
 @app.route('/item/edit/<int:item_id>', methods=['GET', 'POST'])
 def item_edit(item_id):
     item = Item.query.get(item_id)
-    if item.user_id != get_current_user():
-        flash("This item is not been created by you.." )
-    else:    
+    user = get_current_user()
+    if item.user_id == user.id:        
         form = ItemForm(obj=item)
         if form.validate_on_submit():
             form.populate_obj(item)
             db.session.add(item)
             db.session.commit()
             flash(item.title + ' updated successfully')
-            return redirect(url_for('category_view', category_id=item.category_id))
+            return redirect(url_for('category_view', category_id = item.category_id))
         return render_template('item_edit.html', form=form)
-
+    flash('You can not delete this Item its not created by you')
+    return redirect(url_for('category_view', category_id = item.category_id))       
+     
 
 @app.route('/login')
 def showLogin():
@@ -184,10 +194,10 @@ def showLogin():
                     for x in xrange(32))
     login_session['state'] = state
     # return "The current session state is %s" % login_session['state']
-    return render_template('login.html', STATE=state)
+    return render_template('login.html', STATE=state, CLIENT_ID=CLIENT_ID)
 
 
-@app.route('/gconnect', methods=['POST'])
+@app.route('/gconnect', methods=['POST','GET'])
 def gconnect():
     # Validate state token
     if request.args.get('state') != login_session['state']:
@@ -203,10 +213,9 @@ def gconnect():
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:
-        response = make_response(
-            json.dumps('Failed to upgrade the authorization code.'), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        flash('Failed to upgrade the authorization code.')
+        return(url_for('welcome'))
+
 
     # Check that the access token is valid.
     access_token = credentials.access_token
@@ -268,12 +277,48 @@ def gconnect():
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     print "done!-" +  login_session['username']
+
+    # Store this User in Database if not existing
+    user = User.query.filter_by(gplus_id=str(gplus_id)).first()
+    if user is None:
+        user = User()
+        user.username = login_session['username']
+        user.email = login_session['email']
+        user.gplus_id = str(login_session['gplus_id'])
+        user.created = datetime.utcnow()
+        user.modified = datetime.utcnow()
+        db.session.add(user)
+        db.session.commit()
+
     return output
 
 @app.route('/logout')
 def logout():
-    return render_template('logout.html')
+    # Lets invalidate the token to prevent its misuse
+    #
+    if login_session['access_token'] is not None:
+        url = ('https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token'])
+        h = httplib2.Http()
+        result = h.request(url, 'GET')[0]
+        print "result is : " 
+        print  result
+    else:
+        flash('You are not logged in')
+        return redirect('welcome')
+    
+    # If there was an error in the access token info, abort. Problems with Revoking 
+    # if result['status'] == '200':
+    del login_session['username']
+    del login_session['picture']
+    del login_session['email']
+    del login_session['gplus_id']
+    del login_session['access_token']
+    flash('Successfully Logged Out')
+    # else:
+    #    flash('Failed to Revoke Token')
 
+    return redirect(url_for('welcome')) 
+   
 
 @app.route('/user/create', methods=['GET', 'POST'])
 def user_create():
