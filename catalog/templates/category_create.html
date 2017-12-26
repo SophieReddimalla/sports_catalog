@@ -4,7 +4,7 @@
 {% block blk_main %}
 <a href="{{url_for('category_list')}}" class="btn btn-sm btn-primary">Back</a>
 <div>
-    {% for message in form.name.errors %}
+    {% for message in form.title.errors %}
     <div>{{ message }}</div>
     {% endfor %}
 </div>
@@ -14,11 +14,10 @@
         <legend>Create New Category:</legend>
         <div class="form-group">
             {{form.hidden_tag()}}
-            <label for="title">Category Title</label>
+            {{form.title.label}}
             {{form.title}}
         </div>
-
-        <button type="submit" name = "{{form.submit}}" class="btn btn-primary">Submit</button>
+        {{render_field(form.submit, class='btn btn-primary')}}
 </div>
 </form>
 
