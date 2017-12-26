@@ -1,44 +1,50 @@
-## Imports from flask and sqlalchemy
-from flask import Flask, render_template, flash, redirect, url_for, abort, jsonify, request, make_response
-from flask import session as login_session
-from sqlalchemy import desc
-from datetime import datetime
-
+# Imports from flask and sqlalchemy
 import json
 import random
 import string
 import httplib2
 import requests
-## Imports for the oauth
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.client import FlowExchangeError
-##Import from other python files
+from flask import session as login_session
+from sqlalchemy import desc
+from datetime import datetime
 from catalog import app, db
 from forms import UserForm, CategoryForm, ItemForm
 from catalog.models import User, Category, Item
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
+from flask import Flask, render_template, flash, redirect, url_for, abort,
+jsonify, request, make_response
 
-## Client_id is been retrieved from client_secrets.json file
+# Imports for the oauth
+
+# Import from other python files
+
+
+# Client_id is been retrieved from client_secrets.json file
 CLIENT_ID = json.loads(
     open('./catalog/client_secrets.json', 'r').read())['web']['client_id']
 
 
-## The get_current_user() gets the current user logged in based on its gplus_id 
+# The get_current_user() gets the current user logged in based on its gplus_id
 def get_current_user():
     user = None
     if 'gplus_id' in login_session:
-        user = User.query.filter_by(gplus_id=str(login_session['gplus_id'])).first() 
+        user = User.query.filter_by(gplus_id=str
+                                    (login_session['gplus_id'])).first()
     else:
-        login_session['gplus_id'] = None 
+        login_session['gplus_id'] = None
     return user
 
 
 # WELCOME PAGE
 @app.route('/')
 def welcome():
-    flash("Welcome to Sports Catalog " )
+    flash("Welcome to Sports Catalog ")
     return render_template('welcome.html')
 
 # HOME PAGE WITH CATEGORY LIST AND LATEST-ITEM LIST
+
+
 @app.route('/home')
 def home():
     return render_template('home.html')
@@ -48,23 +54,30 @@ def home():
 # ----------------------------------------------------------------------------------------------##
 
 # Displays the category list and the latest items
+
+
 @app.route('/category/list')
 def category_list():
     categories = Category.query.all()
     user = get_current_user()
     latest_items = Item.query.order_by(Item.created.desc()).limit(2)
     return render_template('category_list.html', categories=categories,
-                             items=latest_items , user=user)
+                           items=latest_items, user=user)
 
 # Displays the items in an category
+
+
 @app.route('/category/view/<int:category_id>')
 def category_view(category_id):
     category = Category.query.get(category_id)
-    items = Item.query.filter_by(category_id=category_id).order_by(Item.title).all()
+    items =
+    Item.query.filter_by(category_id=category_id).order_by(Item.title).all()
     return render_template('category_view.html', items=items,
                            category=category, user_id=get_current_user())
 
 # Creates an new category
+
+
 @app.route('/category/create', methods=['GET', 'POST'])
 def category_create():
     form = CategoryForm()
@@ -79,6 +92,8 @@ def category_create():
     return render_template('category_create.html', form=form)
 
 # Delete confirmation form
+
+
 @app.route('/category/delete_confirm/<int:category_id>')
 def category_delete_confirm(category_id):
     category = Category.query.filter_by(id=category_id).first()
@@ -86,24 +101,27 @@ def category_delete_confirm(category_id):
     return render_template('category_delete_confirm.html',
                            category=category, items=items)
 
-# Deletes the category and its items  
+# Deletes the category and its items
+
+
 @app.route('/category/delete/<int:category_id>')
 def category_delete(category_id):
     delete_flag = True
-    #Checks if the user is the one who created the category
+    # Checks if the user is the one who created the category
     category = Category.query.get(category_id)
     if category.ctlg_user != get_current_user():
         delete_flag = False
-    
+
     items = Item.query.filter_by(category_id=category_id).all()
     if items is not None:
-        #checks if the current category has items which are not created by the user 
-        for item in items:
-            if item.ctlg_user != get_current_user():
-                delete_flag = False
-                break
-    #Deletion takes place   
-    if delete_flag == True:
+        # checks if the current category has items
+        # which are not created by the user
+            for item in items:
+                if item.ctlg_user != get_current_user():
+                    delete_flag = False
+                    break
+    # Deletion takes place
+    if delete_flag:
         if items is not None:
             for item in items:
                 db.session.delete(item)
@@ -112,13 +130,16 @@ def category_delete(category_id):
         db.session.commit()
 
         flash("Category -" + category.title +
-                  " and all its items have been deleted successfully!!")
+              " and all its items have been deleted successfully!!")
         return redirect(url_for('category_list'))
     else:
-        flash("All that we know either that this category or its items are not created by you hence you cannot delete it!!")
-    return redirect(url_for('category_list'))     
+        flash("All that we know either that this category or its" +
+              "items are not created by you hence you cannot delete it!!")
+    return redirect(url_for('category_list'))
 
 # Category can be edited here
+
+
 @app.route('/category/edit/<int:category_id>', methods=['GET', 'POST'])
 def category_edit(category_id):
     category = Category.query.get(category_id)
@@ -132,20 +153,23 @@ def category_edit(category_id):
             return redirect(url_for('category_list'))
         return render_template('category_edit.html', form=form)
     else:
-        flash("All that we know that either this category or its items are not created by you hence you cannot edit it!!")
+        flash("All that we know that either this category" +
+              "or its items are not created by you hence you cannot edit it!!")
     return redirect(url_for('category_list'))
 # ---------------------------------------------------------------------------------------------------------------
 # ITEM ELEMENTS
 # --------------------------------------------------------------------------------------------------------------
 
-# Item is been viewed 
+# Item is been viewed
+
+
 @app.route('/item/view/<int:item_id>')
 def item_view(item_id):
     item = Item.query.get(item_id)
     return render_template('item_view.html', item=item)
 
 
-#New item can be created 
+# New item can be created
 @app.route('/item/create/<int:category_id>', methods=['GET', 'POST'])
 def item_create(category_id):
     form = ItemForm()
@@ -158,50 +182,57 @@ def item_create(category_id):
         db.session.add(item)
         db.session.commit()
         return redirect(url_for('item_create', category_id=category_id))
-    return render_template('item_create.html', form=form, category_id=category_id)
+    return render_template('item_create.html',
+                           form=form, category_id=category_id)
 
-#Item deletion confirmation
+# Item deletion confirmation
+
+
 @app.route('/item/delete_confirm/<int:item_id>')
 def item_delete_confirm(item_id):
     item = Item.query.get(item_id)
     return render_template('item_delete_confirm.html', item=item)
-    
-#Item deletion 
+
+# Item deletion
+
+
 @app.route('/item/delete/<int:item_id>')
 def item_delete(item_id):
     item = Item.query.get(item_id)
-    category_id = item.category_id;
+    category_id = item.category_id
     user = get_current_user()
     if item.user_id == user.id:
         db.session.delete(item)
         db.session.commit()
         flash('Item deleted successfully')
-        return redirect(url_for('category_view', category_id = category_id))
+        return redirect(url_for('category_view', category_id=category_id))
     else:
         flash('Item cannot be deleted!!')
-        return redirect(url_for('category_view', category_id = category_id))        
+        return redirect(url_for('category_view', category_id=category_id))
 
 
-#Item is been edited here
+# Item is been edited here
 @app.route('/item/edit/<int:item_id>', methods=['GET', 'POST'])
 def item_edit(item_id):
     item = Item.query.get(item_id)
     user = get_current_user()
-    if item.user_id == user.id:        
+    if item.user_id == user.id:
         form = ItemForm(obj=item)
         if form.validate_on_submit():
             form.populate_obj(item)
             db.session.add(item)
             db.session.commit()
             flash(item.title + ' updated successfully')
-            return redirect(url_for('category_view', category_id = item.category_id))
+            return redirect(url_for('category_view',
+                                    category_id=item.category_id))
         return render_template('item_edit.html', form=form)
     flash('You can not delete this Item its not created by you')
-    return redirect(url_for('category_view', category_id = item.category_id))       
-     
+    return redirect(url_for('category_view', category_id=item.category_id))
+
 # --------------------------------------------------------------------------------------------------------------
 # LOGIN AND LOGOUT
 # --------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/login')
 # Here an random string is generated as state token
@@ -213,7 +244,7 @@ def showLogin():
     return render_template('login.html', STATE=state, CLIENT_ID=CLIENT_ID)
 
 
-@app.route('/gconnect', methods=['POST','GET'])
+@app.route('/gconnect', methods=['POST', 'GET'])
 def gconnect():
     # Validate state token
     if request.args.get('state') != login_session['state']:
@@ -225,15 +256,15 @@ def gconnect():
 
     try:
         # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets('catalog/client_secrets.json', scope='')
+        oauth_flow = flow_from_clientsecrets('catalog/client_secrets.json',
+                                             scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:
         flash('Failed to upgrade the authorization code.')
         return(url_for('welcome'))
 
-
-    # Check that the access token is valid.
+# Check that the access token is valid.
     access_token = credentials.access_token
     url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
            % access_token)
@@ -264,8 +295,8 @@ def gconnect():
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(json.dumps
+                                 ('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -290,9 +321,9 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += '" style = "width: 300px; height:300px;border-radius: 150px;-webkit-border-radius: 150px; -moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
-    print "done!-" +  login_session['username']
+    print "done!-" + login_session['username']
 
     # Store this User in Database if not existing
     user = User.query.filter_by(gplus_id=str(gplus_id)).first()
@@ -308,21 +339,24 @@ def gconnect():
 
     return output
 
+
 @app.route('/logout')
 def logout():
     # Lets invalidate the token to prevent its misuse
     #
     if login_session['access_token'] is not None:
-        url = ('https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token'])
+        url = ('https://accounts.google.com/o/oauth2/revoke?token=%s'
+               % login_session['access_token'])
         h = httplib2.Http()
         result = h.request(url, 'GET')[0]
-        print "result is : " 
-        print  result
+        print "result is : "
+        print result
     else:
         flash('You are not logged in')
         return redirect('welcome')
-    
-    # If there was an error in the access token info, abort. Problems with Revoking 
+
+    # If there was an error in the access token info, abort.
+    # Problems with Revoking
     # if result['status'] == '200':
     del login_session['username']
     del login_session['picture']
@@ -333,10 +367,12 @@ def logout():
     # else:
     #    flash('Failed to Revoke Token')
 
-    return redirect(url_for('welcome')) 
-   
+    return redirect(url_for('welcome'))
+
 # ---------------------------------------------------------------------------------------------------------------
-# User creation 
+# User creation
+
+
 @app.route('/user/create', methods=['GET', 'POST'])
 def user_create():
     form = UserForm()
@@ -351,4 +387,3 @@ def user_create():
         db.session.commit()
         return redirect(url_for('home'))
     return render_template('user_create.html', form=form)
-

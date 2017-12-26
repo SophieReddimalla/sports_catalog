@@ -1,7 +1,9 @@
 from datetime import datetime
 from catalog import db
 
-## Tables ctlg_category, ctlg_item, ctlg_user are been created in the database 
+# Tables ctlg_category, ctlg_item, ctlg_user are been created in the database
+
+
 class Category(db.Model):
     __tablename__ = 'ctlg_category'
     id = db.Column(db.Integer, primary_key=True)
@@ -33,7 +35,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True)
     gplus_id = db.Column(db.String(40), unique=True)
     created = db.Column(db.DateTime, default=datetime.utcnow)
-    modified = db.Column(db.DateTime, default=datetime.utcnow)    
+    modified = db.Column(db.DateTime, default=datetime.utcnow)
     categories = db.relationship('Category', backref='ctlg_user',
                                  lazy='dynamic')
     items = db.relationship('Item', backref='ctlg_user', lazy='dynamic')
