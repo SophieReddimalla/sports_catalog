@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-
+<!-- Stylesheets used in the project -->
     <link rel="stylesheet" href="{{url_for('static' , filename = 'css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{url_for('static' , filename = 'css/bootstrap-theme.min.css')}}">
     <link rel="stylesheet" href="{{url_for('static' , filename = 'css/normalize.min.css')}}">
@@ -22,7 +22,7 @@
 </head>
 
 <body>
-<!-- =============================================================================== -->
+<!--The Navigation Bar -->
 
 <div class="container">
     <nav class="navbar navbar-inverse navbar-fixed-top" >
@@ -35,6 +35,7 @@
                     <a href="{{url_for('category_list')}}">View Catalog</a>
                 </li>
             </ul>
+<!-- The login and logout buttons are defined -->            
             <ul class="nav navbar-nav navbar-right">
                     {% if not session.username  %}
                       <li><a href="{{url_for('showLogin')}}">Login with Google</a></li>
@@ -45,7 +46,7 @@
                     <li><a href="#"> </a></li>
             </ul>
     </nav>
-
+<!-- The place for flash messages are defined -->
     <div class="row">
         <div class="col-md-12">
                 {% with messages = get_flashed_messages() %}
@@ -61,7 +62,7 @@
               {% endwith %}
         </div>
     </div>
-
+<!-- This allocates placeholders for the content in the main block and the side block  -->
     <div class="row">
             <div class="col-md-8">
                 <p>
@@ -80,7 +81,7 @@
         </div>
 
 
-        
+  <!--Footer for the project  -->    
         <nav class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
            <ul class="nav navbar-nav">
                 <li>
@@ -91,12 +92,13 @@
         
 
 </div>
-
+<!--scripts for the project-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="{{url_for('static' , filename = 'js/bootstrap.min.js')}}"></script>  
     <script src="{{url_for('static' , filename = 'js/vendor/modernizr-2.8.3-respond-1.4.2.min.js')}}"></script>
     <script src="//apis.google.com/js/platform.js?onload=start"> </script>
     <script>
+// Sign in button defined
       function signInCallback(authResult) {
         if (authResult['code']) {
           // Hide the sign-in button now that the user is authorized

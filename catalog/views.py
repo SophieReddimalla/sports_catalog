@@ -1,3 +1,4 @@
+## Imports from flask and sqlalchemy
 from flask import Flask, render_template, flash, redirect, url_for, abort, jsonify, request, make_response
 from flask import session as login_session
 from sqlalchemy import desc
@@ -8,22 +9,26 @@ import random
 import string
 import httplib2
 import requests
-
+## Imports for the oauth
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
-
+##Import from other python files
 from catalog import app, db
 from forms import UserForm, CategoryForm, ItemForm
 from catalog.models import User, Category, Item
 
-
+## Client_id is been retrieved from client_secrets.json file
 CLIENT_ID = json.loads(
     open('./catalog/client_secrets.json', 'r').read())['web']['client_id']
 
 
-
+## The get_current_user() gets the current user logged in based on its gplus_id 
 def get_current_user():
-    user = User.query.filter_by(gplus_id=str(login_session['gplus_id'])).first()   # 1-Samson ; 3 - Sophie
+    user = None
+    if 'gplus_id' in login_session:
+        user = User.query.filter_by(gplus_id=str(login_session['gplus_id'])).first() 
+    else:
+        login_session['gplus_id'] = None 
     return user
 
 
@@ -42,15 +47,16 @@ def home():
 # CATEGORY ELELMENTS:
 # ----------------------------------------------------------------------------------------------##
 
-
+# Displays the category list and the latest items
 @app.route('/category/list')
 def category_list():
     categories = Category.query.all()
+    user = get_current_user()
     latest_items = Item.query.order_by(Item.created.desc()).limit(2)
     return render_template('category_list.html', categories=categories,
-                           items=latest_items,  user_id=get_current_user())
+                             items=latest_items , user=user)
 
-
+# Displays the items in an category
 @app.route('/category/view/<int:category_id>')
 def category_view(category_id):
     category = Category.query.get(category_id)
@@ -58,7 +64,7 @@ def category_view(category_id):
     return render_template('category_view.html', items=items,
                            category=category, user_id=get_current_user())
 
-
+# Creates an new category
 @app.route('/category/create', methods=['GET', 'POST'])
 def category_create():
     form = CategoryForm()
@@ -72,7 +78,7 @@ def category_create():
         return redirect(url_for('category_list'))
     return render_template('category_create.html', form=form)
 
-
+# Delete confirmation form
 @app.route('/category/delete_confirm/<int:category_id>')
 def category_delete_confirm(category_id):
     category = Category.query.filter_by(id=category_id).first()
@@ -80,21 +86,23 @@ def category_delete_confirm(category_id):
     return render_template('category_delete_confirm.html',
                            category=category, items=items)
 
-
+# Deletes the category and its items  
 @app.route('/category/delete/<int:category_id>')
 def category_delete(category_id):
     delete_flag = True
+    #Checks if the user is the one who created the category
     category = Category.query.get(category_id)
     if category.ctlg_user != get_current_user():
         delete_flag = False
-
+    
     items = Item.query.filter_by(category_id=category_id).all()
     if items is not None:
+        #checks if the current category has items which are not created by the user 
         for item in items:
             if item.ctlg_user != get_current_user():
                 delete_flag = False
                 break
-
+    #Deletion takes place   
     if delete_flag == True:
         if items is not None:
             for item in items:
@@ -110,7 +118,7 @@ def category_delete(category_id):
         flash("All that we know either that this category or its items are not created by you hence you cannot delete it!!")
     return redirect(url_for('category_list'))     
 
-
+# Category can be edited here
 @app.route('/category/edit/<int:category_id>', methods=['GET', 'POST'])
 def category_edit(category_id):
     category = Category.query.get(category_id)
@@ -126,14 +134,18 @@ def category_edit(category_id):
     else:
         flash("All that we know that either this category or its items are not created by you hence you cannot edit it!!")
     return redirect(url_for('category_list'))
+# ---------------------------------------------------------------------------------------------------------------
+# ITEM ELEMENTS
+# --------------------------------------------------------------------------------------------------------------
 
-
+# Item is been viewed 
 @app.route('/item/view/<int:item_id>')
 def item_view(item_id):
     item = Item.query.get(item_id)
     return render_template('item_view.html', item=item)
 
 
+#New item can be created 
 @app.route('/item/create/<int:category_id>', methods=['GET', 'POST'])
 def item_create(category_id):
     form = ItemForm()
@@ -148,13 +160,13 @@ def item_create(category_id):
         return redirect(url_for('item_create', category_id=category_id))
     return render_template('item_create.html', form=form, category_id=category_id)
 
-
+#Item deletion confirmation
 @app.route('/item/delete_confirm/<int:item_id>')
 def item_delete_confirm(item_id):
     item = Item.query.get(item_id)
     return render_template('item_delete_confirm.html', item=item)
     
-
+#Item deletion 
 @app.route('/item/delete/<int:item_id>')
 def item_delete(item_id):
     item = Item.query.get(item_id)
@@ -170,7 +182,7 @@ def item_delete(item_id):
         return redirect(url_for('category_view', category_id = category_id))        
 
 
-
+#Item is been edited here
 @app.route('/item/edit/<int:item_id>', methods=['GET', 'POST'])
 def item_edit(item_id):
     item = Item.query.get(item_id)
@@ -187,8 +199,12 @@ def item_edit(item_id):
     flash('You can not delete this Item its not created by you')
     return redirect(url_for('category_view', category_id = item.category_id))       
      
+# --------------------------------------------------------------------------------------------------------------
+# LOGIN AND LOGOUT
+# --------------------------------------------------------------------------------------------------------------
 
 @app.route('/login')
+# Here an random string is generated as state token
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
@@ -319,7 +335,8 @@ def logout():
 
     return redirect(url_for('welcome')) 
    
-
+# ---------------------------------------------------------------------------------------------------------------
+# User creation 
 @app.route('/user/create', methods=['GET', 'POST'])
 def user_create():
     form = UserForm()

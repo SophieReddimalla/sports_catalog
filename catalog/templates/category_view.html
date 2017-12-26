@@ -1,3 +1,4 @@
+<!--To view the item list in an category-->
 {% extends 'layout.html'%} 
 {% block blk_main %}
 <a href="{{url_for('item_create', category_id=category.id)}}" class="btn btn-sm btn-primary">Add new Item</a>
@@ -13,6 +14,7 @@
                 <td>
                     <a href="{{url_for('item_view', item_id = item.id)}}">{{item.title}}</a>
                 </td>
+                <!-- The following controls the edit and delete buttons of the items according to the person who has created it -->
                 {% if item.ctlg_user == user_id :%}
                 <td>
                     <a href="{{url_for('item_edit', item_id = item.id)}}" 

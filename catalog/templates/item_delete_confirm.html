@@ -1,9 +1,11 @@
+<!--Form to delete the item-->
 {% extends "layout.html" %} 
 {% block blk_main %}
 <div class="panel panel-danger">
       <div class="panel-heading">
             <h3 class="panel-title">Do you want to delete {{item.title}}?</h3>
       </div>
+<!--Here the Yes/No options are directed accordingly-->      
       <div class="panel-body">
             <a href="{{url_for('item_delete', item_id=item.id)}}">Yes</a>
             <a href="{{url_for('category_view', category_id=item.category_id)}}">No</a>

@@ -1,7 +1,7 @@
 from datetime import datetime
 from catalog import db
 
-
+## Tables ctlg_category, ctlg_item, ctlg_user are been created in the database 
 class Category(db.Model):
     __tablename__ = 'ctlg_category'
     id = db.Column(db.Integer, primary_key=True)

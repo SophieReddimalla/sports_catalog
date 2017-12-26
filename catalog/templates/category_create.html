@@ -1,16 +1,26 @@
+<!--Form to create a new category   -->
 {% extends 'layout.html'%} 
 {% from "form_macros.html" import render_field %} 
 {% block blk_main %}
-<header>
-    <h2>Create category</h2>
-</header>
-<section>
-    <form action="" method="post">
-        {{form.hidden_tag()}}
-        <table>
-            {{ render_field(form.title, size=50) }} 
-            {{ render_field(form.submit) }}
-        </table>
-    </form>
-</section>
+<a href="{{url_for('category_list')}}" class="btn btn-sm btn-primary">Back</a>
+<div>
+    {% for message in form.name.errors %}
+    <div>{{ message }}</div>
+    {% endfor %}
+</div>
+
+<div>
+    <form action="" method="POST" role="form">
+        <legend>Create New Category:</legend>
+        <div class="form-group">
+            {{form.hidden_tag()}}
+            <label for="title">Category Title</label>
+            {{form.title}}
+        </div>
+
+        <button type="submit" name = "{{form.submit}}" class="btn btn-primary">Submit</button>
+</div>
+</form>
+
+
 {% endblock %}

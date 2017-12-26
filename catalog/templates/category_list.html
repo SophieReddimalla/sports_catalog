@@ -1,7 +1,10 @@
+<!-- To display category List -->
 {% extends 'layout.html'%} 
 {% block blk_main %}
     <a href="{{url_for('category_create')}}" class="btn btn-sm btn-primary">Add new category</a>
     <hr/> 
+
+ <!--Category List --> 
     <table class="table table-striped table-hover">
         <thead>
             <tr>
@@ -15,16 +18,19 @@
             <tr>
                 <td>
                     <a href="{{url_for('category_view', category_id = category.id)}}">{{category.title}}</a>
+
                 </td>
-                {% if category.ctlg_user == user_id :%}
-                <td>
-                    <a href="{{url_for('category_edit', category_id = category.id)}}" 
-                    class="btn btn-sm btn-primary" role="button">Edit</a>
-                    <a href="{{url_for('category_delete_confirm', category_id = category.id)}}" 
-                    class="btn btn-sm btn-danger" role="button">Delete</a>
-                </td>
+                <!-- This controls the edit and delete buttons on the basis of the user who created the category -->
+                {% if category.ctlg_user.id == user.id %}
+                    <td>
+                        <a href="{{url_for('category_edit', category_id = category.id)}}" 
+                        class="btn btn-sm btn-primary" role="button">Edit</a>
+                        <a href="{{url_for('category_delete_confirm', category_id = category.id)}}" 
+                        class="btn btn-sm btn-danger" role="button">Delete</a>
+                    </td>
+                    
                 {% else %}
-                <td></td>
+                    <td></td>
                {% endif %}
             </tr>
             {% endfor %}
@@ -32,7 +38,7 @@
     </table>
 {% endblock %}
 
-
+<!-- displays the latest items in the side panel  -->
 {% block blk_side %}
 <div class="panel panel-primary">
         <div class="panel-heading">
