@@ -396,13 +396,13 @@ def logout():
 # ---------------------------------------------------------------------------------------------------------
 
 
-@app.route('/api/item/view/<int:item_id>')
+@app.route('/item/view/<int:item_id>.json')
 def api_item_view(item_id):
     item = Item.query.get(item_id)
     return json.dumps([item.serialize])
 
 
-@app.route('/api/latest-items')
+@app.route('/latest-items.json')
 def api_latest_items():
     latest_items = Item.query.order_by(Item.created.desc()).limit(2)
     return json.dumps([x.serialize for x in latest_items])
