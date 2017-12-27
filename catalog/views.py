@@ -12,8 +12,8 @@ from forms import UserForm, CategoryForm, ItemForm
 from catalog.models import User, Category, Item
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
-from flask import Flask, render_template, flash, redirect, url_for, abort,
-jsonify, request, make_response
+from flask import Flask, render_template, flash, redirect, url_for, abort, \
+                  jsonify, request, make_response
 
 # Imports for the oauth
 
@@ -70,8 +70,9 @@ def category_list():
 @app.route('/category/view/<int:category_id>')
 def category_view(category_id):
     category = Category.query.get(category_id)
-    items =
-    Item.query.filter_by(category_id=category_id).order_by(Item.title).all()
+    items =     Item.query \
+                 .filter_by(category_id=category_id) \
+                 .order_by(Item.title).all()
     return render_template('category_view.html', items=items,
                            category=category, user_id=get_current_user())
 
