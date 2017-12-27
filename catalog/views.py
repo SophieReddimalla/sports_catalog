@@ -391,3 +391,18 @@ def logout():
     #    flash('Failed to Revoke Token')
 
     return redirect(url_for('welcome'))
+# ---------------------------------------------------------------------------------------------------------
+# JSON Endpoints
+# ---------------------------------------------------------------------------------------------------------
+
+
+@app.route('/api/item/view/<int:item_id>')
+def api_item_view(item_id):
+    item = Item.query.get(item_id)
+    return json.dumps([item.serialize])
+
+
+@app.route('/api/latest-items')
+def api_latest_items():
+    latest_items = Item.query.order_by(Item.created.desc()).limit(2)
+    return json.dumps([x.serialize for x in latest_items])

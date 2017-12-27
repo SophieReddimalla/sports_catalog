@@ -27,6 +27,15 @@ class Item(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('ctlg_user.id'),
                         nullable=False)
 
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'category_id': self.category_id
+        }
+
 
 class User(db.Model):
     __tablename__ = 'ctlg_user'
