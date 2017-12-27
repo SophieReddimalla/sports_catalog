@@ -36,10 +36,12 @@ def get_current_user():
     return user
 
 # Check if user is logged in
+
+
 def logged_in():
     if 'gplus_id' in login_session:
         if login_session['gplus_id']:
-             return True
+            return True
     return False
 
 
@@ -245,7 +247,8 @@ def item_edit(item_id):
             flash(item.title + ' updated successfully')
             return redirect(url_for('category_view',
                                     category_id=item.category_id))
-        return render_template('item_edit.html', form=form, category_id=item.category_id)
+        return render_template('item_edit.html', form=form,
+                               category_id=item.category_id)
     flash('You can not delete this Item its not created by you')
     return redirect(url_for('category_view', category_id=item.category_id))
 
@@ -388,5 +391,3 @@ def logout():
     #    flash('Failed to Revoke Token')
 
     return redirect(url_for('welcome'))
-
-
