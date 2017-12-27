@@ -70,9 +70,10 @@ def category_list():
 @app.route('/category/view/<int:category_id>')
 def category_view(category_id):
     category = Category.query.get(category_id)
-    items =     Item.query \
-                 .filter_by(category_id=category_id) \
-                 .order_by(Item.title).all()
+    items = Item.query\
+                .filter_by(category_id=category_id)\
+                .order_by(Item.title).all()
+
     return render_template('category_view.html', items=items,
                            category=category, user_id=get_current_user())
 
@@ -322,7 +323,7 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += '" style = "width: 300px; height:300px;border-radius: 150px;-webkit-border-radius: 150px; -moz-border-radius: 150px;"> '
+    output += '" style = "width: 300px; height:300px;border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     print "done!-" + login_session['username']
 

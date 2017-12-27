@@ -1,5 +1,5 @@
 from catalog import db
-from catalog.models  import User, Category, Item
+from catalog.models import User, Category, Item
 from datetime import datetime
 # Create All Tables
 print "Creating tables ..."
@@ -40,7 +40,7 @@ item.modified = datetime.utcnow()
 item.user_id = user.id
 db.session.add(item)
 db.session.commit()
-print "Item - %s created ID=%d" % (item.title , item.id)
+print "Item - %s created ID=%d" % (item.title, item.id)
 
 print "Creating Sample Items in Football ..."
 item = Item()
@@ -52,9 +52,5 @@ item.modified = datetime.utcnow()
 item.user_id = user.id
 db.session.add(item)
 db.session.commit()
-print "Item - %s created ID=%d" % (item.title , item.id)
+print "Item - %s created ID=%d" % (item.title, item.id)
 print "Done!!!"
-
-
-
-
