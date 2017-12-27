@@ -35,6 +35,13 @@ def get_current_user():
         login_session['gplus_id'] = None
     return user
 
+# Check if user is logged in
+def logged_in():
+    if 'gplus_id' in login_session:
+        if login_session['gplus_id']:
+             return True
+    return False
+
 
 # WELCOME PAGE
 @app.route('/')
@@ -75,6 +82,9 @@ def category_view(category_id):
 
 @app.route('/category/create', methods=['GET', 'POST'])
 def category_create():
+    if not logged_in():
+        flash('Please log in to create categories')
+        return redirect(url_for('category_list'))
     form = CategoryForm()
     if form.validate_on_submit():
         category = Category()
@@ -101,6 +111,9 @@ def category_delete_confirm(category_id):
 
 @app.route('/category/delete/<int:category_id>')
 def category_delete(category_id):
+    if not logged_in():
+        flash('Please log in to delete category')
+        return redirect(url_for('category_list'))
     delete_flag = True
     # Checks if the user is the one who created the category
     category = Category.query.get(category_id)
@@ -137,6 +150,9 @@ def category_delete(category_id):
 
 @app.route('/category/edit/<int:category_id>', methods=['GET', 'POST'])
 def category_edit(category_id):
+    if not logged_in():
+        flash('Please log in to edit categories')
+        return redirect(url_for('category_list'))
     category = Category.query.get(category_id)
     if category.ctlg_user == get_current_user():
         form = CategoryForm(obj=category)
@@ -167,6 +183,9 @@ def item_view(item_id):
 # New item can be created
 @app.route('/item/create/<int:category_id>', methods=['GET', 'POST'])
 def item_create(category_id):
+    if not logged_in():
+        flash('Please log in to create items')
+        return redirect(url_for('category_list'))
     form = ItemForm()
     if form.validate_on_submit():
         item = Item()
@@ -193,6 +212,9 @@ def item_delete_confirm(item_id):
 
 @app.route('/item/delete/<int:item_id>')
 def item_delete(item_id):
+    if not logged_in():
+        flash('Please log in to delete items')
+        return redirect(url_for('category_list'))
     item = Item.query.get(item_id)
     category_id = item.category_id
     user = get_current_user()
@@ -209,6 +231,9 @@ def item_delete(item_id):
 # Item is been edited here
 @app.route('/item/edit/<int:item_id>', methods=['GET', 'POST'])
 def item_edit(item_id):
+    if not logged_in():
+        flash('Please log in to edit items')
+        return redirect(url_for('category_list'))
     item = Item.query.get(item_id)
     user = get_current_user()
     if item.user_id == user.id:

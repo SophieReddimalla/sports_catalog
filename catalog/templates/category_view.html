@@ -1,7 +1,9 @@
 <!--To view the item list in an category-->
 {% extends 'layout.html'%} 
 {% block blk_main %}
+{% if session.gplus_id  %}
 <a href="{{url_for('item_create', category_id=category.id)}}" class="btn btn-sm btn-primary">Add new Item</a>
+{% endif %}
 <a href="{{url_for('category_list')}}" class="btn btn-sm btn-primary">Back</a>
 <hr/>
 <div>

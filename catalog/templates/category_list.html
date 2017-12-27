@@ -1,7 +1,9 @@
 <!-- To display category List -->
 {% extends 'layout.html'%} 
 {% block blk_main %}
-    <a href="{{url_for('category_create')}}" class="btn btn-sm btn-primary">Add new category</a>
+    {% if session.gplus_id  %}
+       <a href="{{url_for('category_create')}}" class="btn btn-sm btn-primary">Add new category</a>
+    {% endif %}
     <hr/> 
 
  <!--Category List --> 
