@@ -1,17 +1,24 @@
 <!--Form to edit a category-->
-{% extends 'layout.html'%}
-{% from "form_macros.html" import render_field %} 
+{% extends 'layout.html'%} 
 {% block blk_main %}
-<header>
-        <h2>Edit category</h2>
-    </header>
-    <section>
-        <form action="" method="post">
+<a href="{{url_for('category_list')}}" class="btn btn-sm btn-primary">Back</a>
+<div>
+    {% for message in form.title.errors %}
+    <div>{{ message }}</div>
+    {% endfor %}
+</div>
+
+<div>
+    <form action="" method="POST" role="form">
+        <legend>Edit Category:</legend>
+        <div class="form-group">
             {{form.hidden_tag()}}
-            <table>
-                {{ render_field(form.title, size=50) }} 
-                {{ render_field(form.submit) }}
-            </table>
-        </form>
-    </section>
-    {% endblock %}
+            {{form.title.label}}
+            {{form.title(size=100)}}
+        </div>
+        {{form.submit(class='btn btn-primary')}}
+</div>
+</form>
+
+
+{% endblock %}

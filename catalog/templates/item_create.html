@@ -1,6 +1,5 @@
 <!--Form to Create an item-->
 {% extends 'layout.html'%}
-{% from "form_macros.html" import render_field %}
 {% block blk_main %}
 <a href="{{url_for('category_view', category_id = category_id)}}" class="btn btn-sm btn-primary">Back</a>
 <div>
@@ -13,15 +12,15 @@
                 {{form.hidden_tag()}}
                 <table>
                     <tr><td>{{form.title.label}}       </td></tr>
-                    <tr><td>{{form.title}}             </td></tr>
+                    <tr><td>{{form.title(size=100)}}             </td></tr>
                     {% for message in form.title.errors %} <tr><td>{{ message }}</td></tr> {% endfor %}
                     <tr><td> {{form.description.label}}</td></tr>
-                    <tr><td> {{form.description}}      </td></tr>
+                    <tr><td> {{form.description(size=100)}}      </td></tr>
                     {% for message in form.description.errors %} <tr><td>{{ message }}</td></tr>  {% endfor %}
                </table>
 
             </div>
-            {{render_field(form.submit, class='btn btn-primary')}}
+            {{form.submit(class='btn btn-primary')}}
         </form>
 </div>
 {% endblock %}

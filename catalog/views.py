@@ -8,7 +8,7 @@ from flask import session as login_session
 from sqlalchemy import desc
 from datetime import datetime
 from catalog import app, db
-from forms import UserForm, CategoryForm, ItemForm
+from forms import CategoryForm, ItemForm
 from catalog.models import User, Category, Item
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -41,13 +41,6 @@ def get_current_user():
 def welcome():
     flash("Welcome to Sports Catalog ")
     return render_template('welcome.html')
-
-# HOME PAGE WITH CATEGORY LIST AND LATEST-ITEM LIST
-
-
-@app.route('/home')
-def home():
-    return render_template('home.html')
 
 # -----------------------------------------------------------------------------------------------##
 # CATEGORY ELELMENTS:
@@ -227,7 +220,7 @@ def item_edit(item_id):
             flash(item.title + ' updated successfully')
             return redirect(url_for('category_view',
                                     category_id=item.category_id))
-        return render_template('item_edit.html', form=form)
+        return render_template('item_edit.html', form=form, category_id=item.category_id)
     flash('You can not delete this Item its not created by you')
     return redirect(url_for('category_view', category_id=item.category_id))
 
@@ -371,21 +364,4 @@ def logout():
 
     return redirect(url_for('welcome'))
 
-# ---------------------------------------------------------------------------------------------------------------
-# User creation
 
-
-@app.route('/user/create', methods=['GET', 'POST'])
-def user_create():
-    form = UserForm()
-    if form.validate_on_submit():
-        user = User()
-        user.firstname = form.firstname.data
-        user.lastname = form.lastname.data
-        user.username = form.username.data
-        user.password = form.password.data
-        user.email = form.email.data
-        db.session.add(user)
-        db.session.commit()
-        return redirect(url_for('home'))
-    return render_template('user_create.html', form=form)

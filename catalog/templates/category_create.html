@@ -1,6 +1,5 @@
 <!--Form to create a new category   -->
 {% extends 'layout.html'%} 
-{% from "form_macros.html" import render_field %} 
 {% block blk_main %}
 <a href="{{url_for('category_list')}}" class="btn btn-sm btn-primary">Back</a>
 <div>
@@ -15,9 +14,9 @@
         <div class="form-group">
             {{form.hidden_tag()}}
             {{form.title.label}}
-            {{form.title}}
+            {{form.title(size=100)}}
         </div>
-        {{render_field(form.submit, class='btn btn-primary')}}
+        {{form.submit(class='btn btn-primary')}}
 </div>
 </form>
 
