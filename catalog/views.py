@@ -48,6 +48,9 @@ def logged_in():
 # WELCOME PAGE
 @app.route('/')
 def welcome():
+    """
+    This is the welcome page of the catalog project.
+    """
     flash("Welcome to Sports Catalog ")
     return render_template('welcome.html')
 
@@ -60,6 +63,10 @@ def welcome():
 
 @app.route('/category/list')
 def category_list():
+    """
+    This shows the list of categories and latest items in the descending
+    order from the date of creation of the item. 
+    """
     categories = Category.query.all()
     user = get_current_user()
     latest_items = Item.query.order_by(Item.created.desc()).limit(2)
@@ -71,6 +78,9 @@ def category_list():
 
 @app.route('/category/view/<int:category_id>')
 def category_view(category_id):
+    """
+    Here the items in a particular category is displayed.
+    """
     category = Category.query.get(category_id)
     items = Item.query\
                 .filter_by(category_id=category_id)\
@@ -84,6 +94,9 @@ def category_view(category_id):
 
 @app.route('/category/create', methods=['GET', 'POST'])
 def category_create():
+    """
+    This creates a new category only if the user is logged in
+    """
     if not logged_in():
         flash('Please log in to create categories')
         return redirect(url_for('category_list'))
@@ -103,6 +116,9 @@ def category_create():
 
 @app.route('/category/delete_confirm/<int:category_id>')
 def category_delete_confirm(category_id):
+    """
+    This shows the delete confirmation before deleting the category.
+    """
     category = Category.query.filter_by(id=category_id).first()
     items = Item.query.filter_by(category_id=category_id)
     return render_template('category_delete_confirm.html',
@@ -113,6 +129,10 @@ def category_delete_confirm(category_id):
 
 @app.route('/category/delete/<int:category_id>')
 def category_delete(category_id):
+    """
+    This deletes the category only if the user is logged in and the creator of the category.
+    The category will not be deleted if it has items which are not created by the user.
+    """
     if not logged_in():
         flash('Please log in to delete category')
         return redirect(url_for('category_list'))
@@ -152,6 +172,9 @@ def category_delete(category_id):
 
 @app.route('/category/edit/<int:category_id>', methods=['GET', 'POST'])
 def category_edit(category_id):
+    """
+    This creates a edits category only if the user is logged in
+    """ 
     if not logged_in():
         flash('Please log in to edit categories')
         return redirect(url_for('category_list'))
@@ -178,6 +201,9 @@ def category_edit(category_id):
 
 @app.route('/item/view/<int:item_id>')
 def item_view(item_id):
+    """
+    This shows the description of the item
+    """
     item = Item.query.get(item_id)
     return render_template('item_view.html', item=item)
 
@@ -185,6 +211,9 @@ def item_view(item_id):
 # New item can be created
 @app.route('/item/create/<int:category_id>', methods=['GET', 'POST'])
 def item_create(category_id):
+    """
+    This creates a new item only if the user is logged in
+    """
     if not logged_in():
         flash('Please log in to create items')
         return redirect(url_for('category_list'))
@@ -206,6 +235,9 @@ def item_create(category_id):
 
 @app.route('/item/delete_confirm/<int:item_id>')
 def item_delete_confirm(item_id):
+    """
+    This shows the delete confirmation before deleting the item.
+    """
     item = Item.query.get(item_id)
     return render_template('item_delete_confirm.html', item=item)
 
@@ -214,6 +246,9 @@ def item_delete_confirm(item_id):
 
 @app.route('/item/delete/<int:item_id>')
 def item_delete(item_id):
+    """
+    This deletes the item only if the user is logged in and the creator of the item.
+    """
     if not logged_in():
         flash('Please log in to delete items')
         return redirect(url_for('category_list'))
@@ -233,6 +268,9 @@ def item_delete(item_id):
 # Item is been edited here
 @app.route('/item/edit/<int:item_id>', methods=['GET', 'POST'])
 def item_edit(item_id):
+    """
+    This creates a edits category only if the user is logged in
+    """ 
     if not logged_in():
         flash('Please log in to edit items')
         return redirect(url_for('category_list'))
@@ -269,6 +307,9 @@ def showLogin():
 
 @app.route('/gconnect', methods=['POST', 'GET'])
 def gconnect():
+    """
+    Gathers data from Google Sign In API and places it inside a session variable.
+    """
     # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -365,8 +406,9 @@ def gconnect():
 
 @app.route('/logout')
 def logout():
-    # Lets invalidate the token to prevent its misuse
-    #
+    """
+    This invalidate the token to prevent its misuse by clearing the session.
+    """
     if login_session['access_token'] is not None:
         url = ('https://accounts.google.com/o/oauth2/revoke?token=%s'
                % login_session['access_token'])
@@ -398,11 +440,17 @@ def logout():
 
 @app.route('/item/view/<int:item_id>.json')
 def api_item_view(item_id):
+    """
+    Returns a given item in json format.
+    """
     item = Item.query.get(item_id)
     return json.dumps([item.serialize])
 
 
 @app.route('/latest-items.json')
 def api_latest_items():
+    """
+    Returns Latest item list in json format.
+    """
     latest_items = Item.query.order_by(Item.created.desc()).limit(2)
     return json.dumps([x.serialize for x in latest_items])

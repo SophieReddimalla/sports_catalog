@@ -9,6 +9,9 @@ from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo,\
 
 
 class CategoryForm(FlaskForm):
+    """
+    This class defines the validators for the category forms.
+    """
     title = StringField('Category Name', validators=[DataRequired(),
                                                      Length(4, 100)])
     submit = SubmitField()
@@ -17,6 +20,9 @@ class CategoryForm(FlaskForm):
 
 
 class ItemForm(FlaskForm):
+    """
+    This class defines the validators for the item forms.
+    """
     title = StringField('Item Name', validators=[DataRequired(),
                                                  Length(4, 100)])
     description = StringField('Item Description', validators=[DataRequired(),

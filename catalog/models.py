@@ -5,6 +5,9 @@ from catalog import db
 
 
 class Category(db.Model):
+    """
+    Model:Category
+    """
     __tablename__ = 'ctlg_category'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
@@ -16,6 +19,9 @@ class Category(db.Model):
 
 
 class Item(db.Model):
+    """
+    Model:Item
+    """
     __tablename__ = 'ctlg_item'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
@@ -38,6 +44,9 @@ class Item(db.Model):
 
 
 class User(db.Model):
+    """
+    Model:User
+    """
     __tablename__ = 'ctlg_user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(120), nullable=False)
