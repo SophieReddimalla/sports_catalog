@@ -434,19 +434,25 @@ def logout():
 # ---------------------------------------------------------------------------------------------------------
 
 
-@app.route('/item/view/<int:item_id>.json')
+@app.route('/api/item/view/<int:item_id>')
 def api_item_view(item_id):
     """
     Returns a given item in json format.
     """
     item = Item.query.get(item_id)
+    if item is None:
+        data = {'error' : 'Item not found'}
+        return json.dumps([data])
     return json.dumps([item.serialize])
 
 
-@app.route('/latest-items.json')
+@app.route('/api/latest-items')
 def api_latest_items():
     """
     Returns Latest item list in json format.
     """
     latest_items = Item.query.order_by(Item.created.desc()).limit(2)
+    if latest_items is None:
+        data = {'error' : 'No Items yet'}
+        return json.dumps([data])        
     return json.dumps([x.serialize for x in latest_items])
