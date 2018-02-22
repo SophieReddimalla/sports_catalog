@@ -5,3 +5,5 @@ httplib2
 requests
 sqlalchemy
 oauth2client
+psycopg2
+
