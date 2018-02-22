@@ -7,7 +7,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'DQnp]}^$HSBnOfxwXaaXfr2V'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2:///catalog'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://catalog:catalog1234@127.0.0.1/catalog'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEBUG'] = True
 db = SQLAlchemy(app)
