@@ -22,7 +22,7 @@ from flask import Flask, render_template, flash, redirect, url_for, abort, \
 
 # Client_id is been retrieved from client_secrets.json file
 CLIENT_ID = json.loads(
-    open('./catalog/client_secrets.json', 'r').read())['web']['client_id']
+    open('/var/www/catalog/catalog/client_secrets.json', 'r').read())['web']['client_id']
 
 
 # The get_current_user() gets the current user logged in based on its gplus_id
@@ -320,7 +320,7 @@ def gconnect():
 
     try:
         # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets('catalog/client_secrets.json',
+        oauth_flow = flow_from_clientsecrets('/var/www/catalog/catalog/client_secrets.json',
                                              scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
